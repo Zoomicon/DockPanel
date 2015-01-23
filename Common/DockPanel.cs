@@ -70,7 +70,9 @@ namespace System.Windows.Controls
     /// <param name="e">Event arguments.</param>
     private static void OnLastChildFillPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-      ((DockPanel)d).InvalidateArrange();
+      DockPanel panel = d as DockPanel;
+      if (panel != null)
+        panel.InvalidateArrange();
     }
 
     #endregion
@@ -93,9 +95,7 @@ namespace System.Windows.Controls
     public static Dock GetDock(UIElement element)
     {
       if (element == null)
-      {
         throw new ArgumentNullException("element");
-      }
       return (Dock)element.GetValue(DockProperty);
     }
 
@@ -114,9 +114,7 @@ namespace System.Windows.Controls
     public static void SetDock(UIElement element, Dock dock)
     {
       if (element == null)
-      {
         throw new ArgumentNullException("element");
-      }
       element.SetValue(DockProperty, dock);
     }
 
@@ -160,11 +158,7 @@ namespace System.Windows.Controls
         _ignorePropertyChange = true;
         element.SetValue(DockProperty, (Dock)e.OldValue);
 
-        string message = string.Format(
-          CultureInfo.InvariantCulture,
-          "InvalidValue",
-          value);
-        throw new ArgumentException(message, "value");
+        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "InvalidValue", value), "value");
       }
 
       // Cause the DockPanel to update its layout when a child changes
@@ -209,7 +203,10 @@ namespace System.Windows.Controls
     [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration", MessageId = "0#", Justification = "Compat with WPF.")]
     protected override Size MeasureOverride(Size constraint)
     {
-      double usedWidth = 0.0, usedHeight = 0.0 , maximumWidth = 0.0, maximumHeight = 0.0;
+      double usedWidth = 0.0;
+      double usedHeight = 0.0;
+      double maximumWidth = 0.0;
+      double maximumHeight = 0.0;
 
       // Measure each of the Children
       foreach (UIElement element in Children)
@@ -260,7 +257,10 @@ namespace System.Windows.Controls
     [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration", MessageId = "0#", Justification = "Compat with WPF.")]
     protected override Size ArrangeOverride(Size arrangeSize)
     {
-      double left = 0.0, top = 0.0, right = 0.0, bottom = 0.0;
+      double left = 0.0;
+      double top = 0.0;
+      double right = 0.0;
+      double bottom = 0.0;
 
       // Arrange each of the Children
       UIElementCollection children = Children;
